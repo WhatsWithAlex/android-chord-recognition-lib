@@ -35,10 +35,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun start() {
         val chordLabelText = findViewById<TextView>(R.id.chordLabel)
-        val chordStream = ChordRecognizer(44110, 4096, 2048).chordStream()
+        val chordStream = ChordRecognizer().chordStream()
 
         disposable.add(chordStream.subscribe({ chordLabel ->
-            Log.d(TAG, chordLabel)
             chordLabelText.text = chordLabel
         }, {e -> e.message?.let { Log.e(TAG, it) }}))
     }
@@ -62,7 +61,7 @@ class MainActivity : AppCompatActivity() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        if (grantResults[0] == PERMISSION_GRANTED)
-            start()
+//        if (grantResults[0] == PERMISSION_GRANTED)
+////            start()
     }
 }

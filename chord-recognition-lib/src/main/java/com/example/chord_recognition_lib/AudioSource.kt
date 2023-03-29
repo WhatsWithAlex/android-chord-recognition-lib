@@ -9,16 +9,16 @@ import io.reactivex.Flowable
 import io.reactivex.schedulers.Schedulers
 import java.nio.FloatBuffer
 
-const val RATE_HZ = 44100
-const val SAMPLE_SIZE = 4096
-
 /**
  * Rx Flowable factory that expose a Flowable through stream() that while subscribed to emits
  * audio frames of size 4096 and 768 [~10fps, ~60fps]. Uses Disposable to handle deallocation.
  *
  * @author Pär Amsen 06/2017
  */
-class AudioSource {
+class AudioSource(
+    private val sampleRate: Int,
+    private val sampleSize: Int
+    ) {
     val TAG = javaClass.simpleName
 
     private val flowable: Flowable<FloatArray>
@@ -33,7 +33,7 @@ class AudioSource {
             val src = MediaRecorder.AudioSource.MIC
             val cfg = AudioFormat.CHANNEL_IN_MONO
             val format = AudioFormat.ENCODING_PCM_16BIT
-            val size = AudioRecord.getMinBufferSize(RATE_HZ, cfg, format)
+            val size = AudioRecord.getMinBufferSize(sampleRate, cfg, format)
 
             if (size <= 0) {
                 sub.onError(RuntimeException("AudioSource / Could not allocate audio buffer on this device (emulator? no mic?)"))
@@ -41,7 +41,7 @@ class AudioSource {
             }
 
             try {
-                val recorder = AudioRecord(src, RATE_HZ, cfg, format, size)
+                val recorder = AudioRecord(src, sampleRate, cfg, format, size)
 
                 recorder.startRecording()
                 sub.setCancellable {
@@ -50,7 +50,7 @@ class AudioSource {
                 }
 
                 val buf = ShortArray(512)
-                val out = FloatBuffer.allocate(SAMPLE_SIZE)
+                val out = FloatBuffer.allocate(sampleSize)
                 var read = 0
 
                 while (!sub.isCancelled) {

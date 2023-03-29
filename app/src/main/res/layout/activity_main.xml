@@ -13,7 +13,7 @@
         android:layout_marginTop="160dp"
         android:textAlignment="center"
         android:textColor="#4AAC34"
-        android:textSize="72sp"
+        android:textSize="196sp"
         android:textStyle="bold"
         android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
